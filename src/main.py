@@ -7,7 +7,8 @@ if __name__ == "__main__":
     data_generator = DataGenerator(folder_name="data/etg/",
                                    number_of_images=150,
                                    image_size=100,
-                                   data_split=0.8)
+                                   data_split=0.8, 
+                                   number_to_augment=0)
 
     x_train, x_valid, x_test = data_generator.generate()
 
