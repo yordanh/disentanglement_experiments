@@ -27,7 +27,7 @@ class DataAugmenter(object):
 				# For the other 50% of all images, we sample the noise per pixel AND
 				# channel. This can change the color (not only brightness) of the
 				# pixels.
-				iaa.AdditiveGaussianNoise(loc=0, scale=(0.0, 0.05*255), per_channel=0.5),
+				# iaa.AdditiveGaussianNoise(loc=0, scale=(0.0, 0.05*255), per_channel=0.5),
 
 				# Make some images brighter and some darker.
 				# In 20% of all cases, we sample the multiplier once per channel,
@@ -121,3 +121,16 @@ class DataGenerator(object):
 		print("Testing: {0}\n".format(x_test.shape))
 
 		return x_train, x_valid, x_test
+
+	def cherry_pick(self, folder_name=""):
+		cherry_picked = []
+
+		image_list = os.listdir("data/" + folder_name)
+		for image_name in image_list:
+			image = cv2.imread("data/" + folder_name + "/" + image_name, 1)
+			cherry_picked.append(image)
+
+		cherry_picked = np.array(cherry_picked).astype('float32') / 255.
+		cherry_picked = cherry_picked.reshape(len(cherry_picked), self.image_size, self.image_size, 3)
+
+		return cherry_picked
