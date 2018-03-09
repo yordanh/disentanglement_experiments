@@ -1,6 +1,12 @@
-from keras.layers import Input, Dense, Conv2D, MaxPooling2D, UpSampling2D
+from keras.layers import Input, Dense, Conv2D, MaxPooling2D, UpSampling2D, Lambda, Flatten, Reshape
 from keras.models import Model
 from keras import backend as K
+from keras import metrics
+import numpy as np
+import os
+from scipy.stats import norm
+import matplotlib.mlab as mlab
+import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 plt.switch_backend('agg')
 
@@ -9,8 +15,8 @@ import cv2
 class VanillaConvAE(object):
 
 
-	def __init__(self):
-		self.model_name = "vanilla_conv_ae"
+	def __init__(self, number_to_augment=0):
+		self.model_name = "vanilla_conv_ae_augment_" + str(number_to_augment)
 		self.latent_size = 8
 
 		self.history = None
@@ -21,6 +27,7 @@ class VanillaConvAE(object):
 
 	def build(self):
 		# define model
+		# image format is channels last - (batch_size, x, y, no_filters)
 		input_img = Input(shape=(100, 100, 3))  # adapt this if using `channels_first` image data format
 		x = Conv2D(16, (3, 3), activation='relu', padding='same')(input_img) # (100, 100)
 		x = MaxPooling2D((2, 2), padding='same')(x) # (50, 50)
@@ -29,15 +36,16 @@ class VanillaConvAE(object):
 		x = Conv2D(8, (4, 4), activation='relu')(x) # (22, 22)
 		x = MaxPooling2D((2, 2), padding='same')(x) # (11, 11)
 		x = Conv2D(8, (4, 4), activation='relu')(x) # (8, 8)
-		x = MaxPooling2D((2, 2), padding='same')(x) # (4, 4)
-		encoded = Conv2D(8, (4, 4), activation='relu')(x) # (1, 1)
+		
+		flat = Flatten()(x)
+		encoded = Dense(8)(flat) # (1,8)
 
-		# at this point the representation is (1, 1, 8) i.e. 128-dimensional
+		# at this point the representation is (1, 8) i.e. 8-dimensional
 
-		x = UpSampling2D((4,4))(encoded) # (4,4)
-		x = Conv2D(8, (3, 3), activation='relu', padding='same')(x) # (4, 4)
-		x = UpSampling2D((2, 2))(x) # (8, 8)
-		x = Conv2D(8, (3, 3), activation='relu', padding='same')(x) # (8, 8)
+		decoded_upsample = Dense(8 * 8)(encoded) # (1,64)
+		decoded_reshape = Reshape([8, 8, 1])(decoded_upsample) # (8,8)
+
+		x = Conv2D(8, (3, 3), activation='relu', padding='same')(decoded_reshape) # (8, 8)
 		x = UpSampling2D((2, 2))(x) # (16, 16)
 		x = Conv2D(16, (3, 3), activation='relu')(x) # (14, 14)
 		x = UpSampling2D((2, 2))(x) # (28, 28)
@@ -63,6 +71,7 @@ class VanillaConvAE(object):
 	def compile(self, optimizer=None, loss=None, metrics=None):
 		self.autoencoder.compile(optimizer=optimizer,
 								 loss=loss)
+		# self.autoencoder.summary()
 
 
 	def predict(self, data):
@@ -86,15 +95,16 @@ class VanillaConvAE(object):
 	    plt.xlabel('epoch')
 	    plt.legend(['train', 'valid'], loc='upper right')
 	    plt.savefig("results/"+self.model_name+"/curve")
+	    plt.close()
 
 
-	def inspect_result(self, encoded_imgs, decoded_imgs, x_test):
+	def reconstruct(self, encoded_imgs, decoded_imgs, x_test):
 	    number_of_objects = 12
 	    image_shape = decoded_imgs[0].shape
 	    plt.figure(figsize=(20, 6))
 
+	    # display original vs reconstructed images
 	    for i in range(number_of_objects):
-	        # display original
 	        ax = plt.subplot(2, number_of_objects, i + 1)
 	        test_image = x_test[i].reshape(image_shape)
 	        plt.imshow(cv2.cvtColor(test_image, cv2.COLOR_BGR2RGB))
