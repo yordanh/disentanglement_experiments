@@ -48,10 +48,12 @@ class DataAugmenter(object):
 
 class DataGenerator(object):
 
-	def __init__(self, folder_name="", image_size=0, number_of_images=0, data_split=0.8, number_to_augment=0):
+	def __init__(self, folder_name="", image_size=0, number_of_objects=0, number_of_images=0, data_split=0.8, number_to_augment=0):
 		self.folder_name = folder_name
+		self.data_name = folder_name.split('/')[1]
 		self.image_size = image_size
 		self.number_of_images = number_of_images
+		self.number_of_objects = number_of_objects
 		self.data_split = data_split
 		self.number_to_augment = number_to_augment
 		if self.number_to_augment != 0:
