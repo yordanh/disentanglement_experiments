@@ -3,16 +3,13 @@ from data_generator import DataGenerator
 
 if __name__ == "__main__":
 
-    # Set some global parameters
-    number_to_augment = 0
-
     #Load Data
     data_generator = DataGenerator(folder_name="data/etg/",
                                    number_of_images=150,
                                    number_of_objects=12,
                                    image_size=100,
                                    data_split=0.8, 
-                                   number_to_augment=number_to_augment)
+                                   number_to_augment=5)
 
     x_train, x_valid, x_test = data_generator.generate()
 
