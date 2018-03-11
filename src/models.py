@@ -47,25 +47,25 @@ class AutoEncoder(object):
 		# Serialize model to JSON
 		if self.encoder != None:
 			encoder_json = self.encoder.to_json()
-			with open(self.models_folder + "_encoder.json", "w") as json_file:
+			with open(self.models_folder + "/encoder.json", "w") as json_file:
 				json_file.write(encoder_json)
 		   	# Serialize weights to HDF5
-    		self.encoder.save_weights(self.models_folder + "_encoder.h5")
+    		self.encoder.save_weights(self.models_folder + "/encoder.h5")
     		print("Saved ENCODER model to disk")
 
 		if self.decoder:
 			decoder_json = self.decoder.to_json()
-			with open(self.models_folder + "_decoder.json", "w") as json_file:
+			with open(self.models_folder + "/decoder.json", "w") as json_file:
 				json_file.write(decoder_json)
 			# Serialize weights to HDF5
-			self.decoder.save_weights(self.models_folder + "_decoder.h5")
+			self.decoder.save_weights(self.models_folder + "/decoder.h5")
 			print("Saved DECODER model to disk")
 
 		full_model_json = self.autoencoder.to_json()
-		with open(self.models_folder + ".json", "w") as json_file:
+		with open(self.models_folder + "/full.json", "w") as json_file:
 			json_file.write(full_model_json)
 		# Serialize weights to HDF5
-		self.autoencoder.save_weights(self.models_folder + ".h5")
+		self.autoencoder.save_weights(self.models_folder + "/full.h5")
 		
 		
 		print("Saved FULL model to disk")
@@ -73,38 +73,38 @@ class AutoEncoder(object):
 	def load_model(self):
 
 		try:
-			json_file = open(self.models_folder + '_encoder.json', 'r')
+			json_file = open(self.models_folder + '/encoder.json', 'r')
 			loaded_model_json = json_file.read()
 			json_file.close()
 			self.encoder = model_from_json(loaded_model_json)
 			
 			# Load weights into new model
-			self.encoder.load_weights(self.models_folder + "_encoder.h5")
+			self.encoder.load_weights(self.models_folder + "/encoder.h5")
 			print("Loaded ENCODER model from disk")
 		except:
 			print("No ENCODER model found!")
 
 		try:
-			json_file = open(self.models_folder + '_decoder.json', 'r')
+			json_file = open(self.models_folder + '/decoder.json', 'r')
 			loaded_model_json = json_file.read()
 			json_file.close()
 			self.decoder = model_from_json(loaded_model_json)
 			
 			# Load weights into new model
-			self.decoder.load_weights(self.models_folder + "_decoder.h5")
+			self.decoder.load_weights(self.models_folder + "/decoder.h5")
 			print("Loaded DECODER model from disk")
 		except:
 			print("No DECODER model found!")
 
 		try:
 			#  Load json and create model
-			json_file = open(self.models_folder + '.json', 'r')
+			json_file = open(self.models_folder + '/full.json', 'r')
 			loaded_model_json = json_file.read()
 			json_file.close()
 			self.autoencoder = model_from_json(loaded_model_json)
 			
 			# Load weights into new model
-			self.autoencoder.load_weights(self.models_folder + ".h5")
+			self.autoencoder.load_weights(self.models_folder + "/full.h5")
 			print("Loaded FULL model from disk")
 		except:
 			print("No FULL model found!")
