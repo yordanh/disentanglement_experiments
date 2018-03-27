@@ -111,3 +111,6 @@ results/
 
 # models
 models/
+
+# all images
+*.png
