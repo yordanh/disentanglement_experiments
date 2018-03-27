@@ -379,7 +379,7 @@ class BetaConvVAE(AutoEncoder):
 		self.encoder = 		Model(input_img, z_mean)
 		self.decoder = 		Model(latent, _output_img)
 
-		xent_loss = 100 * 100 * 3 * metrics.binary_crossentropy(K.flatten(input_img), K.flatten(output_img))
+		xent_loss = metrics.binary_crossentropy(K.flatten(input_img), K.flatten(output_img))
 		kl_loss = - 0.5 * K.sum(1 + z_log_var - K.square(z_mean) - K.exp(z_log_var), axis=-1)
 		vae_loss = K.mean(xent_loss + self.beta*kl_loss)
 		self.autoencoder.add_loss(vae_loss)
