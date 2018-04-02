@@ -4,16 +4,14 @@ from data_generator import DataGenerator
 if __name__ == "__main__":
 
     #Load Data
-    data_generator = DataGenerator(folder_name="data/etg/",
-                                   number_of_images=150,
-                                   number_of_objects=12,
+    data_generator = DataGenerator(folder_name="data/dSprites/",
                                    image_size=100,
                                    data_split=0.8, 
-                                   number_to_augment=5)
+                                   number_to_augment=0)
 
     x_train, x_valid, x_test = data_generator.generate()
 
-    cherry_picked_data = data_generator.cherry_pick(folder_name="cherry_picked")
+    # cherry_picked_data = data_generator.cherry_pick(folder_name="cherry_picked")
 
     # Vanilla Convolutional Autoencoder
     # vanilla_conv_ae = VanillaConvAE(data_generator=data_generator)
@@ -53,7 +51,7 @@ if __name__ == "__main__":
     beta_conv_vae.plot_latent_vectors(encoded_imgs)
     beta_conv_vae.plot_sampled_images()
 
-    beta_conv_vae.plot_latent_distribution(cherry_picked_data)
+    # beta_conv_vae.plot_latent_distribution(cherry_picked_data)
 
     # Save Model
     beta_conv_vae.save_model()

@@ -33,7 +33,7 @@ class AutoEncoder(object):
 	def fit(self, x=None, y=None, batch_size=None, epochs=None, validation_data=None, shuffle=None):
 
 		callbacks_list = []
-		early_stopping = EarlyStopping(monitor='val_loss', min_delta=0, patience=20, verbose=0, mode='auto')
+		early_stopping = EarlyStopping(monitor='val_loss', min_delta=0, patience=50, verbose=0, mode='auto')
 		callbacks_list.append(early_stopping)
 
 		self.history = self.autoencoder.fit(x=x,

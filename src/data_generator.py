@@ -48,12 +48,9 @@ class DataAugmenter(object):
 
 class DataGenerator(object):
 
-	def __init__(self, folder_name="", image_size=0, number_of_objects=0, number_of_images=0, data_split=0.8, number_to_augment=0):
+	def __init__(self, folder_name="", image_size=0, data_split=0.8, number_to_augment=0):
 		self.folder_name = folder_name
 		self.data_name = folder_name.split('/')[1]
-		self.image_size = image_size
-		self.number_of_images = number_of_images
-		self.number_of_objects = number_of_objects
 		self.data_split = data_split
 		self.number_to_augment = number_to_augment
 		if self.number_to_augment != 0:
@@ -75,13 +72,14 @@ class DataGenerator(object):
 		folder_list = os.listdir(folder_name)
 		for folder in folder_list:
 			image_list = os.listdir(folder_name+folder)
+			number_of_images = len(image_list)
 
 			print("Processing folder {0}/{1} with {2} images".format(folder_list.index(folder), len(folder_list), len(image_list)))
 
 			x_test.append(cv2.imread(folder_name+folder+"/"+image_list[0], 1))
 
 			if self.number_to_augment != 0:
-				for image_name in image_list[1:int(self.data_split * self.number_of_images)]:
+				for image_name in image_list[1:int(self.data_split * number_of_images)]:
 					image = cv2.imread(folder_name+folder+"/"+image_name, 1)
 					x_train.append(image)
 
@@ -97,10 +95,10 @@ class DataGenerator(object):
 					# 	cv2.waitKey(0)
 					# exit()
 			else: 
-				for image_name in image_list[1:int(self.data_split * self.number_of_images)]:
+				for image_name in image_list[1:int(self.data_split * number_of_images)]:
 					x_train.append(cv2.imread(folder_name+folder+"/"+image_name, 1))
 
-			for image_name in image_list[int(self.data_split * self.number_of_images):]:
+			for image_name in image_list[int(self.data_split * number_of_images):]:
 				x_valid.append(cv2.imread(folder_name+folder+"/"+image_name, 1))		
 
 			print("Training size: {0} images".format(len(x_train)))
