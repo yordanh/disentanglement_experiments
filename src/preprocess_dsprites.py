@@ -11,7 +11,7 @@ import copy
 
 parser = argparse.ArgumentParser(description='Process the dSprited dataset.')
 parser.add_argument('--image_size', default=100, type=int, help='Width and height of the square patch in px.')
-parser.add_argument('--cutoff', default=1, type=int, help='Cutoff number - max number of images per class extracted')
+parser.add_argument('--cutoff', default=1000, type=int, help='Cutoff number - max number of images per class extracted')
 
 data = np.load("/home/yordan/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz")
 
@@ -42,12 +42,12 @@ def extract(folder_name=None, latent_spec=None, cutoff=None, image_size=None, bg
 	images = numpy.take(data['imgs'], indecies, axis=0)
 
 	for i, image in enumerate(images):
-		if i > cutoff:
+		if i >= cutoff:
 			break
 
 		image = cv2.resize(image, (image_size, image_size))
 		image = numpy.tile(image.reshape(image_size,image_size,1), (1, 1, 3)) * bgr_color
-		print(image.shape)
+		
 		cv2.imwrite(folder_name + str(i) + ".png", image)
 		
 		if verbose:
